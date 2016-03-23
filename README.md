@@ -5,6 +5,12 @@ cloudsight-go
 
 A simple CloudSight API Client for Go programming language.
 
+Status
+======
+
+This package is currently in **beta** status. It means the API may still change
+in **backwards uncompatible** way.
+
 Installation
 ============
 
