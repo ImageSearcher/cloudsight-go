@@ -40,14 +40,13 @@ var (
 var userAgent = []string{"cloudsight-go v1.0"}
 
 type apiResponse struct {
-	Categories []string        `json:"categories"`
-	Error      json.RawMessage `json:"error"`
-	Name       string          `json:"name"`
-	Reason     string          `json:"reason"`
-	Status     string          `json:"status"`
-	TTL        float64         `json:"ttl"`
-	Token      string          `json:"token"`
-	URL        string          `json:"url"`
+	Error  json.RawMessage `json:"error"`
+	Name   string          `json:"name"`
+	Reason string          `json:"reason"`
+	Status string          `json:"status"`
+	TTL    float64         `json:"ttl"`
+	Token  string          `json:"token"`
+	URL    string          `json:"url"`
 }
 
 // Possible values for current job status.
@@ -144,9 +143,6 @@ type Client struct {
 
 // Job is a result of sending an image to CloudSight API.
 type Job struct {
-	// Image categories as annotated by the API.
-	Categories []string
-
 	// Image description as annotated by the API.
 	Name string
 
@@ -293,16 +289,13 @@ func (c *Client) ImageRequest(image io.Reader, filename string, params Params) (
 
 	hdr := req.Header
 	hdr["User-Agent"] = userAgent
-
+	hdr["Content-Length"] = []string{strconv.Itoa(buf.Len())}
+	hdr["Content-Type"] = []string{multi.FormDataContentType()}
 	auth, err := c.getAuthHeader("POST", requestsURL, params)
 	if err != nil {
 		return nil, err
 	}
 	hdr["Authorization"] = []string{auth}
-
-	hdr["Content-Length"] = []string{strconv.Itoa(buf.Len())}
-	hdr["Content-Type"] = []string{multi.FormDataContentType()}
-
 	return c.doImageRequest(req)
 }
 
@@ -335,16 +328,12 @@ func (c *Client) RemoteImageRequest(url string, params Params) (*Job, error) {
 
 	hdr := req.Header
 	hdr["User-Agent"] = userAgent
-
+	hdr["Content-Length"] = []string{strconv.Itoa(body.Len())}
 	auth, err := c.getAuthHeader("POST", requestsURL, params)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("auth", auth)
 	hdr["Authorization"] = []string{auth}
-
-	hdr["Content-Length"] = []string{strconv.Itoa(body.Len())}
-
 	return c.doImageRequest(req)
 }
 
@@ -367,7 +356,6 @@ func (c *Client) updateJobFromRequest(job *Job, req *http.Request) error {
 		return fmt.Errorf("api error: %s, status code: %d", string(updatedJob.Error), resp.StatusCode)
 	}
 
-	job.Categories = updatedJob.Categories
 	job.Name = updatedJob.Name
 	job.Status = JobStatus(updatedJob.Status)
 	job.TTL = updatedJob.TTL
