@@ -2,6 +2,7 @@ cloudsight-go
 =============
 
 [![GoDoc](https://godoc.org/github.com/cloudsight/cloudsight-go?status.png)](https://godoc.org/github.com/cloudsight/cloudsight-go)
+[![Build Status](https://travis-ci.org/cloudsight/cloudsight-go.svg?branch=master)](https://travis-ci.org/cloudsight/cloudsight-go)
 
 A simple CloudSight API Client for Go programming language.
 
